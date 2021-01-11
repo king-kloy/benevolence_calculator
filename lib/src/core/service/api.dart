@@ -107,4 +107,12 @@ class Api {
 
     return customerRecord;
   }
+
+  removeDelivery(int deliveryId) async {
+    return await databaseService.deleteDelivery(deliveryId);
+  }
+
+  removePayment(int paymentId) async {
+    return await databaseService.deletePayment(paymentId);
+  }
 }
