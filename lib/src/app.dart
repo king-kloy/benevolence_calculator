@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               BorderRadius.all(Radius.circular(20.0))),
                       content: Container(
                         width: mScreenWidth,
-                        height: mScreenHeight / 6,
+                        height: mScreenHeight / 5.5,
                         decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
                           color: const Color(0xFFFFFF),
