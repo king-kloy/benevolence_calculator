@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../components/expansion_card.dart';
-import '../views/sign_in.dart';
 
 class Home extends StatefulWidget {
   @override
