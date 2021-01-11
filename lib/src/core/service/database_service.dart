@@ -313,7 +313,7 @@ class DatabaseService {
     var dbClient = await db;
 
     return await dbClient
-        .delete(DELIVERIES_TABLE, where: '$CUSTOMER_ID = ?', whereArgs: [id]);
+        .delete(DELIVERIES_TABLE, where: '$DELIVERY_ID = ?', whereArgs: [id]);
   }
 
   // delete payment from PAYMENTS_TABLE
@@ -321,7 +321,7 @@ class DatabaseService {
     var dbClient = await db;
 
     return await dbClient
-        .delete(PAYMENTS_TABLE, where: '$CUSTOMER_ID = ?', whereArgs: [id]);
+        .delete(PAYMENTS_TABLE, where: '$PAYMENTS_ID = ?', whereArgs: [id]);
   }
 
   // ---------------------------------------------------------------------------------
