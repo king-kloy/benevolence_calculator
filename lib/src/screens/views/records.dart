@@ -77,7 +77,7 @@ class _RecordsState extends State<Records> {
               shape: StadiumBorder(),
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
               child: Text(
-                'Summary',
+                'Check Balance',
                 style: Theme.of(context).textTheme.headline6.merge(
                       TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold),
@@ -132,7 +132,7 @@ class _RecordsState extends State<Records> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
-            Row(
+          /*   Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total deliveries'),
@@ -154,7 +154,7 @@ class _RecordsState extends State<Records> {
             ),
             Divider(
               color: Colors.black,
-            ),
+            ), */
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
