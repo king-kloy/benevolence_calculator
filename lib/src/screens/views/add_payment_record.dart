@@ -217,7 +217,7 @@ class _AddPaymentRecordState extends State<AddPaymentRecord> {
     );
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pop(context); //pop dialog
-      _showSnackBar('Customer delivery saved successfully');
+      _showSnackBar('Customer payment saved successfully');
     });
   }
 
