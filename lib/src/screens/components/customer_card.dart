@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:benevolence_calculator/src/core/models/customer_model.dart';
+import 'package:benevolence_calculator/src/screens/views/customer_record.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerCard extends StatelessWidget {
-  final String imagePath, name, phoneNumber;
+  final CustomerModel customer;
 
-  CustomerCard({this.imagePath, this.name, this.phoneNumber});
+  CustomerCard({this.customer});
 
   @override
   Widget build(BuildContext context) => Container(
@@ -22,40 +24,50 @@ class CustomerCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  imagePath.isEmpty
-                      ? Container(
-                          margin: EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                image: AssetImage("assets/user-profile.png")),
-                          ),
-                          height: 50,
-                          width: 50,
-                        )
-                      : ClipOval(
-                          child: Image.file(
-                            File(imagePath),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => CustomerRecord(
+                                customerId: customer.id,
+                              )));
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    customer.imagePath.isEmpty
+                        ? Container(
+                            margin: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: AssetImage("assets/user-profile.png")),
+                            ),
                             height: 50,
                             width: 50,
-                            fit: BoxFit.cover,
+                          )
+                        : ClipOval(
+                            child: Image.file(
+                              File(customer.imagePath),
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                  Text(
-                    name,
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ],
+                    Text(
+                      customer.name,
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ],
+                ),
               ),
-              phoneNumber == null || phoneNumber.isEmpty
+              customer.phoneNumber == null || customer.phoneNumber.isEmpty
                   ? SizedBox()
                   : IconButton(
                       icon: Icon(Icons.call),
                       onPressed: () {
-                        _makePhoneCall(phoneNumber);
+                        _makePhoneCall(customer.phoneNumber);
                       },
                     )
             ],
