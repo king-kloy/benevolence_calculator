@@ -49,9 +49,7 @@ class _CustomersState extends State<Customers> {
     return Column(
       children: customers
           .map((customer) => CustomerCard(
-                imagePath: customer.imagePath,
-                name: customer.name,
-                phoneNumber: customer.phoneNumber,
+                customer: customer,
               ))
           .toList(),
     );
