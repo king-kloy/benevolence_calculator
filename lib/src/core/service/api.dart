@@ -72,4 +72,39 @@ class Api {
       "balance": remainingBalance
     };
   }
+
+  fetchCustomerDeliveries(int customerId) async {
+    List<DeliveryModel> customerDeliveries = await databaseService
+        .getAllDeliveriesByCustomerId(customerId)
+        .then((deliveries) => deliveries);
+    return customerDeliveries;
+  }
+
+  fetchCustomerPayments(int customerId) async {
+    List<PaymentModel> customerPayments = await databaseService
+        .getAllPaymentsByCustomerId(customerId)
+        .then((payments) => payments);
+    return customerPayments;
+  }
+
+  fetchCustomer(int customerId) async {
+    CustomerModel customer = await databaseService
+        .getCustomer(customerId)
+        .then((customer) => customer);
+    return customer;
+  }
+
+  fetchCustomerRecord(int customerId) async {
+    CustomerModel customer = await fetchCustomer(customerId);
+    List<PaymentModel> payments = await fetchCustomerPayments(customerId);
+    List<DeliveryModel> deliveries = await fetchCustomerDeliveries(customerId);
+
+    Map<String, dynamic> customerRecord = {
+      "customer": customer,
+      "payments": payments,
+      "deliveries": deliveries
+    };
+
+    return customerRecord;
+  }
 }
