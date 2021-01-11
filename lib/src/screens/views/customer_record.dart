@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:benevolence_calculator/src/core/bloc/customer_record_bloc.dart';
 import 'package:benevolence_calculator/src/core/models/delivery_model.dart';
 import 'package:benevolence_calculator/src/core/models/payment_model.dart';
+import 'package:benevolence_calculator/src/core/service/api.dart';
 import 'package:benevolence_calculator/src/screens/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../locator.dart';
 
 class CustomerRecord extends StatefulWidget {
   final int customerId;
@@ -17,6 +20,11 @@ class CustomerRecord extends StatefulWidget {
 }
 
 class _CustomersState extends State<CustomerRecord> {
+  final Api _api = locator<Api>();
+
+  // scaffold key
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -26,14 +34,15 @@ class _CustomersState extends State<CustomerRecord> {
         child: BlocBuilder<CustomerRecordBloc, CustomerRecordState>(
             builder: (context, state) {
           if (state is CustomerRecordInitial) {
+            // load customer records by triggering GetCustomerRecord event
             BlocProvider.of<CustomerRecordBloc>(context)
                 .add(GetCustomerRecord(customerId: widget.customerId));
             return Scaffold(body: Loading());
           } else if (state is CustomerRecordLoading) {
             return Scaffold(body: Loading());
           } else if (state is CustomerRecordLoaded) {
-            debugPrint("${state.customerRecord["deliveries"]}");
             return Scaffold(
+              key: _scaffoldKey,
               appBar: AppBar(
                 title: Row(
                   mainAxisSize: MainAxisSize.max,
@@ -80,10 +89,10 @@ class _CustomersState extends State<CustomerRecord> {
               body: TabBarView(children: [
                 SingleChildScrollView(
                   child:
-                      _renderDeliveriesView(state.customerRecord["deliveries"]),
+                      _renderDeliveriesView(context, state.customerRecord["deliveries"]),
                 ),
                 SingleChildScrollView(
-                  child: _renderPaymentsView(state.customerRecord["payments"]),
+                  child: _renderPaymentsView(context, state.customerRecord["payments"]),
                 ),
               ]),
             );
@@ -94,28 +103,28 @@ class _CustomersState extends State<CustomerRecord> {
     );
   }
 
-  _renderPaymentsView(List<PaymentModel> payments) {
+  _renderPaymentsView(BuildContext context, List<PaymentModel> payments) {
     if (payments.isEmpty) return Center(child: Text("No payments yet"));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
           children:
-              payments.map((payment) => _buildPaymentCard(payment)).toList()),
+              payments.map((payment) => _buildPaymentCard(context, payment)).toList()),
     );
   }
 
-  _renderDeliveriesView(List<DeliveryModel> deliveries) {
+  _renderDeliveriesView(BuildContext context, List<DeliveryModel> deliveries) {
     if (deliveries.isEmpty) return Center(child: Text("No deliveries yet"));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
           children: deliveries
-              .map((delivery) => _buildDeliveryCard(delivery))
+              .map((delivery) => _buildDeliveryCard(context, delivery))
               .toList()),
     );
   }
 
-  Card _buildPaymentCard(PaymentModel paymentModel) {
+  Card _buildPaymentCard(BuildContext context, PaymentModel paymentModel) {
     return Card(
       margin: EdgeInsets.only(bottom: 20.0),
       shape: RoundedRectangleBorder(
@@ -127,9 +136,23 @@ class _CustomersState extends State<CustomerRecord> {
       child: ExpansionTile(
         backgroundColor: Colors.white,
         childrenPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 25),
-        title: Text(
-          '${paymentModel.paymentDate}',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${paymentModel.paymentDate}',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                _api.removePayment(paymentModel.id);
+                _showSnackBar("Payment record deleted successfully");
+                BlocProvider.of<CustomerRecordBloc>(context)
+                    .add(GetCustomerRecord(customerId: widget.customerId));
+              },
+            )
+          ],
         ),
         children: [
           Row(
@@ -147,7 +170,7 @@ class _CustomersState extends State<CustomerRecord> {
     );
   }
 
-  Card _buildDeliveryCard(DeliveryModel deliveryModel) {
+  Card _buildDeliveryCard(BuildContext context, DeliveryModel deliveryModel) {
     return Card(
       margin: EdgeInsets.only(bottom: 20.0),
       shape: RoundedRectangleBorder(
@@ -159,9 +182,23 @@ class _CustomersState extends State<CustomerRecord> {
       child: ExpansionTile(
         backgroundColor: Colors.white,
         childrenPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 25),
-        title: Text(
-          '${deliveryModel.deliveryDate}',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${deliveryModel.deliveryDate}',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                _api.removeDelivery(deliveryModel.id);
+                _showSnackBar("Delivery record deleted successfully");
+                BlocProvider.of<CustomerRecordBloc>(context)
+                    .add(GetCustomerRecord(customerId: widget.customerId));
+              },
+            )
+          ],
         ),
         children: [
           Row(
@@ -234,5 +271,9 @@ class _CustomersState extends State<CustomerRecord> {
         ],
       ),
     );
+  }
+
+  void _showSnackBar(String value) {
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 }
