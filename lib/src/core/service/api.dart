@@ -115,4 +115,12 @@ class Api {
   removePayment(int paymentId) async {
     return await databaseService.deletePayment(paymentId);
   }
+
+  removeCustomer(int customerId) async {
+    return await databaseService.deleteCustomer(customerId);
+  }
+
+  export() async {
+    return await databaseService.exportDatabase();
+  }
 }
