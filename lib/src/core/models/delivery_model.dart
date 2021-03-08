@@ -9,6 +9,8 @@ class DeliveryModel extends Equatable {
   String bigBreadQty;
   String biggerBreadQty;
   String biggestBreadQty;
+  String thirtyFiveBreadQty;
+  String mostBiggestBreadQty;
   String roundBreadQty;
   String deliveryDate;
 
@@ -20,6 +22,8 @@ class DeliveryModel extends Equatable {
       this.bigBreadQty,
       this.biggerBreadQty,
       this.biggestBreadQty,
+      this.thirtyFiveBreadQty,
+      this.mostBiggestBreadQty,
       this.roundBreadQty,
       this.deliveryDate});
 
@@ -33,6 +37,8 @@ class DeliveryModel extends Equatable {
       'bigBreadQty': bigBreadQty,
       'biggerBreadQty': biggerBreadQty,
       'biggestBreadQty': biggestBreadQty,
+      'thirtyFiveBreadQty': thirtyFiveBreadQty,
+      'mostBiggestBreadQty': mostBiggestBreadQty,
       'roundBreadQty': roundBreadQty,
       'deliveryDate': deliveryDate,
     };
@@ -49,6 +55,8 @@ class DeliveryModel extends Equatable {
     bigBreadQty = map['bigBreadQty'];
     biggerBreadQty = map['biggerBreadQty'];
     biggestBreadQty = map['biggestBreadQty'];
+    thirtyFiveBreadQty = map['thirtyFiveBreadQty'];
+    mostBiggestBreadQty = map['mostBiggestBreadQty'];
     roundBreadQty = map['roundBreadQty'];
     deliveryDate = map['deliveryDate'];
   }
@@ -62,6 +70,8 @@ class DeliveryModel extends Equatable {
         bigBreadQty,
         biggerBreadQty,
         biggestBreadQty,
+        thirtyFiveBreadQty,
+        mostBiggestBreadQty,
         roundBreadQty,
         deliveryDate
       ];
