@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -31,6 +31,8 @@ class DatabaseService {
   static const String BIG_BREAD_QTY = 'bigBreadQty';
   static const String BIGGER_BREAD_QTY = 'biggerBreadQty';
   static const String BIGGEST_BREAD_QTY = 'biggestBreadQty';
+  static const String MOST_BIGGEST_BREAD_QTY = 'mostBiggestBreadQty';
+  static const String THIRTY_FIVE_BREAD_QTY = 'thirtyFiveBreadQty';
   static const String ROUND_BREAD_QTY = 'roundBreadQty';
   static const String DELIVERY_DATE = 'deliveryDate';
 
@@ -52,7 +54,8 @@ class DatabaseService {
 
   // initialize the database with DB_NAME
   initDB() async {
-    io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    Directory documentsDirectory = await getExternalStorageDirectory();
+
     String path = join(documentsDirectory.path, DB_NAME);
 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
@@ -65,7 +68,7 @@ class DatabaseService {
     await db.execute(
         "CREATE TABLE $CUSTOMERS_TABLE($PROFILE_ID INTEGER PRIMARY KEY, $NAME TEXT, $IMAGE_PATH TEXT, $PHONE_NUMBER TEXT, $ADDRESS TEXT)");
     await db.execute(
-        "CREATE TABLE $DELIVERIES_TABLE($DELIVERY_ID INTEGER PRIMARY KEY, $CUSTOMER_ID INTEGER, $TOTAL_PRICE TEXT, $SMALL_BREAD_QTY TEXT, $BIG_BREAD_QTY TEXT, $BIGGER_BREAD_QTY TEXT, $BIGGEST_BREAD_QTY TEXT, $ROUND_BREAD_QTY TEXT, $DELIVERY_DATE TEXT, FOREIGN KEY($CUSTOMER_ID) REFERENCES $CUSTOMERS_TABLE($PROFILE_ID))");
+        "CREATE TABLE $DELIVERIES_TABLE($DELIVERY_ID INTEGER PRIMARY KEY, $CUSTOMER_ID INTEGER, $TOTAL_PRICE TEXT, $SMALL_BREAD_QTY TEXT, $BIG_BREAD_QTY TEXT, $BIGGER_BREAD_QTY TEXT, $BIGGEST_BREAD_QTY TEXT, $THIRTY_FIVE_BREAD_QTY TEXT, $MOST_BIGGEST_BREAD_QTY TEXT, $ROUND_BREAD_QTY TEXT, $DELIVERY_DATE TEXT, FOREIGN KEY($CUSTOMER_ID) REFERENCES $CUSTOMERS_TABLE($PROFILE_ID))");
     await db.execute(
         "CREATE TABLE $PAYMENTS_TABLE($PAYMENTS_ID INTEGER PRIMARY KEY, $CUSTOMER_ID INTEGER, $AMOUNT TEXT, $PAYMENT_DATE TEXT, FOREIGN KEY($CUSTOMER_ID) REFERENCES $CUSTOMERS_TABLE($PROFILE_ID))");
     // return db;
@@ -142,6 +145,8 @@ class DatabaseService {
       BIG_BREAD_QTY,
       BIGGER_BREAD_QTY,
       BIGGEST_BREAD_QTY,
+      THIRTY_FIVE_BREAD_QTY,
+      MOST_BIGGEST_BREAD_QTY,
       ROUND_BREAD_QTY,
       DELIVERY_DATE,
     ]);
@@ -170,6 +175,8 @@ class DatabaseService {
           BIG_BREAD_QTY,
           BIGGER_BREAD_QTY,
           BIGGEST_BREAD_QTY,
+          THIRTY_FIVE_BREAD_QTY,
+          MOST_BIGGEST_BREAD_QTY,
           ROUND_BREAD_QTY,
           DELIVERY_DATE,
         ],
@@ -263,6 +270,8 @@ class DatabaseService {
           BIG_BREAD_QTY,
           BIGGER_BREAD_QTY,
           BIGGEST_BREAD_QTY,
+          THIRTY_FIVE_BREAD_QTY,
+          MOST_BIGGEST_BREAD_QTY,
           ROUND_BREAD_QTY,
           DELIVERY_DATE,
         ],
@@ -358,5 +367,28 @@ class DatabaseService {
   Future close() async {
     var dbClient = await db;
     dbClient.close();
+  }
+
+  /// export database
+  Future<File> exportDatabase() async {
+    var dbClient = await db;
+    var basNameWithExtension = basename(dbClient.path);
+
+    var newPath = (await getExternalStorageDirectory()).path;
+
+    return await moveFile(
+        File(dbClient.path), newPath + "/" + basNameWithExtension);
+  }
+
+  Future<File> moveFile(File sourceFile, String newPath) async {
+    try {
+      /// prefer using rename as it is probably faster
+      /// if same directory path
+      return await sourceFile.rename(newPath);
+    } catch (e) {
+      /// if rename fails, copy the source file
+      final newFile = await sourceFile.copy(newPath);
+      return newFile;
+    }
   }
 }
