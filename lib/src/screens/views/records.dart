@@ -1,9 +1,11 @@
-import 'package:benevolence_calculator/src/core/bloc/customers_bloc.dart';
-import 'package:benevolence_calculator/src/core/bloc/summary_bloc.dart';
-import 'package:benevolence_calculator/src/core/models/customer_model.dart';
-import 'package:benevolence_calculator/src/screens/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../core/bloc/customers_bloc.dart';
+import '../../core/bloc/summary_bloc.dart';
+import '../../core/models/customer_model.dart';
+import '../components/loading.dart';
+import '../components/toast_message.dart';
 
 class Records extends StatefulWidget {
   @override
@@ -22,6 +24,7 @@ class _RecordsState extends State<Records> {
     BlocProvider.of<CustomersBloc>(context).add(GetCustomers());
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Customer Records"),
         automaticallyImplyLeading: false,
@@ -86,7 +89,7 @@ class _RecordsState extends State<Records> {
               onPressed: () {
                 print("Get summary...");
                 if (_currentCustomer == null) {
-                  _showSnackBar("Kindly Choose customer");
+                  toastMessage(context, "Kindly Choose customer");
                 } else {
                   BlocProvider.of<SummaryBloc>(context)
                       .add(GetRecordSummary(customerId: _currentCustomer.id));
@@ -132,7 +135,7 @@ class _RecordsState extends State<Records> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
-          /*   Row(
+            /*   Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total deliveries'),
@@ -169,9 +172,5 @@ class _RecordsState extends State<Records> {
         ),
       ),
     );
-  }
-
-  void _showSnackBar(String value) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 }
