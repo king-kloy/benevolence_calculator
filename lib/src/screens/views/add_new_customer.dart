@@ -5,10 +5,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../../locator.dart';
 import '../../core/models/customer_model.dart';
 import '../../core/service/api.dart';
 import '../../util/date_time.dart';
-import '../../../locator.dart';
+import '../components/toast_message.dart';
 
 class AddNewCustomer extends StatefulWidget {
   @override
@@ -139,7 +140,7 @@ class _AddNewCustomerState extends State<AddNewCustomer> {
                   onPressed: () {
                     // don't save customer info if name and phoneNumber isEmpty
                     if (_nameController.text.isEmpty) {
-                      _showSnackBar(
+                      toastMessage(context,
                           "Kindly provide customer name and phone number.");
                     } else {
                       CustomerModel customerModel = CustomerModel(
@@ -218,11 +219,7 @@ class _AddNewCustomerState extends State<AddNewCustomer> {
     );
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pop(context); //pop dialog
-      _showSnackBar('Customer data saved successfully');
+      toastMessage(context, 'Customer data saved successfully');
     });
-  }
-
-  void _showSnackBar(String value) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 }
