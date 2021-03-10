@@ -75,9 +75,29 @@ class ExpansionCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text('Bigger (GH¢3.50 each)'),
+              Text(
+                '${deliveryModel.thirtyFiveBreadQty}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Text('Biggest (GH¢4.00 each)'),
               Text(
                 '${deliveryModel.biggestBreadQty}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Most Biggest (GH¢4.50 each)'),
+              Text(
+                '${deliveryModel.mostBiggestBreadQty}',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               )
             ],
