@@ -1,14 +1,18 @@
 import 'dart:io';
 
-import 'package:benevolence_calculator/src/core/models/customer_model.dart';
-import 'package:benevolence_calculator/src/screens/views/customer_record.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+
+import '../../core/models/customer_model.dart';
+import '../views/customer_record.dart';
 
 class CustomerCard extends StatelessWidget {
   final CustomerModel customer;
 
   CustomerCard({this.customer});
+
+  void _makePhoneCall(String phoneNumber) async =>
+      await FlutterPhoneDirectCaller.callNumber(phoneNumber);
 
   @override
   Widget build(BuildContext context) => Container(
@@ -74,12 +78,4 @@ class CustomerCard extends StatelessWidget {
           ),
         ),
       );
-
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    if (await canLaunch(phoneNumber)) {
-      await launch(phoneNumber);
-    } else {
-      return;
-    }
-  }
 }
