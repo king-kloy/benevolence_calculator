@@ -1,14 +1,15 @@
-import 'package:benevolence_calculator/src/core/bloc/customers_bloc.dart';
-import 'package:benevolence_calculator/src/core/models/customer_model.dart';
-import 'package:benevolence_calculator/src/core/models/delivery_model.dart';
-import 'package:benevolence_calculator/src/core/service/api.dart';
-import 'package:benevolence_calculator/src/screens/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../../../locator.dart';
+import '../../core/bloc/customers_bloc.dart';
+import '../../core/models/customer_model.dart';
+import '../../core/models/delivery_model.dart';
+import '../../core/service/api.dart';
 import '../../util/date_time.dart';
+import '../components/loading.dart';
+import '../components/toast_message.dart';
 
 class AddDeliveryRecord extends StatefulWidget {
   @override
@@ -28,7 +29,9 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
   static const double SMALL_BREAD_UNIT_PRICE = 2.0;
   static const double BIG_BREAD_UNIT_PRICE = 2.5;
   static const double BIGGER_BREAD_UNIT_PRICE = 3.0;
+  static const double THIRTY_FIVE_BREAD_UNIT_PRICE = 3.5;
   static const double BIGGEST_BREAD_UNIT_PRICE = 4.0;
+  static const double MOST_BIGGEST_BREAD_UNIT_PRICE = 4.5;
   static const double ROUND_BREAD_UNIT_PRICE = 5.0;
 
   // textfield controllers
@@ -36,6 +39,8 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
   TextEditingController _bigBreadController;
   TextEditingController _biggerBreadController;
   TextEditingController _biggestBreadController;
+  TextEditingController _mostBiggestBreadController;
+  TextEditingController _thirtyFiveBreadController;
   TextEditingController _roundBreadController;
 
   DateTimeHelper dateTimeHelper;
@@ -50,6 +55,8 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
     _bigBreadController = TextEditingController(text: "");
     _biggerBreadController = TextEditingController(text: "");
     _biggestBreadController = TextEditingController(text: "");
+    _thirtyFiveBreadController = TextEditingController(text: "");
+    _mostBiggestBreadController = TextEditingController(text: "");
     _roundBreadController = TextEditingController(text: "");
 
     // set date
@@ -136,10 +143,24 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
             ),
           ),
           TextFormField(
+            controller: _thirtyFiveBreadController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Thirty Five Bread (GH¢3.50 each) Quantity',
+            ),
+          ),
+          TextFormField(
             controller: _biggestBreadController,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               labelText: 'Biggest (GH¢4.0 each) Quantity',
+            ),
+          ),
+          TextFormField(
+            controller: _mostBiggestBreadController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Most Biggest (GH¢4.5 each) Quantity',
             ),
           ),
           TextFormField(
@@ -198,9 +219,8 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
                 color: Theme.of(context).primaryColor,
                 onPressed: () {
                   double calcResult = _calculateCost();
-                   print(calcResult);
-                  setState(() =>
-                      _totalPrice = calcResult);
+                  print(calcResult);
+                  setState(() => _totalPrice = calcResult);
                 },
                 child: Icon(Icons.calculate, color: Colors.white),
               ),
@@ -245,13 +265,18 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
                       smallBreadQty: _smallBreadController.text ?? "0",
                       bigBreadQty: _bigBreadController.text ?? "0",
                       biggerBreadQty: _biggerBreadController.text ?? "0",
-                      biggestBreadQty:_biggestBreadController.text ?? "0",
+                      biggestBreadQty: _biggestBreadController.text ?? "0",
+                      thirtyFiveBreadQty:
+                          _thirtyFiveBreadController.text ?? "0",
+                      mostBiggestBreadQty:
+                          _mostBiggestBreadController.text ?? "0",
                       roundBreadQty: _roundBreadController.text ?? "0",
                       deliveryDate: _dateTime));
                   _formKey.currentState?.reset();
                   _onSaving(context);
                 } else {
-                  _showSnackBar('Kindly select customer before saving.');
+                  toastMessage(
+                      context, 'Kindly select customer before saving.');
                 }
               },
             ),
@@ -278,6 +303,14 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
         ? 0.0
         : double.parse(_biggestBreadController.text);
 
+    double mostBiggestBread = _mostBiggestBreadController.text.isEmpty
+        ? 0.0
+        : double.parse(_mostBiggestBreadController.text);
+
+     double thirtyFiveBread = _thirtyFiveBreadController.text.isEmpty
+        ? 0.0
+        : double.parse(_thirtyFiveBreadController.text);
+
     double roundBread = _roundBreadController.text.isEmpty
         ? 0.0
         : double.parse(_roundBreadController.text);
@@ -286,6 +319,8 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
         (bigBread * BIG_BREAD_UNIT_PRICE) +
         (biggerBread * BIGGER_BREAD_UNIT_PRICE) +
         (biggestBread * BIGGEST_BREAD_UNIT_PRICE) +
+        (thirtyFiveBread * THIRTY_FIVE_BREAD_UNIT_PRICE) +
+        (mostBiggestBread * MOST_BIGGEST_BREAD_UNIT_PRICE) +
         (roundBread * ROUND_BREAD_UNIT_PRICE);
 
     return totalPrice;
@@ -319,11 +354,7 @@ class _AddDeliveryRecordState extends State<AddDeliveryRecord> {
     );
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pop(context); //pop dialog
-      _showSnackBar('Customer delivery saved successfully');
+      toastMessage(context, 'Customer delivery saved successfully');
     });
-  }
-
-  void _showSnackBar(String value) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 }
