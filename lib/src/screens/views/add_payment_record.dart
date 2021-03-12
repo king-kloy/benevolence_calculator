@@ -1,14 +1,15 @@
-import 'package:benevolence_calculator/src/core/bloc/customers_bloc.dart';
-import 'package:benevolence_calculator/src/core/models/customer_model.dart';
-import 'package:benevolence_calculator/src/core/models/payment_model.dart';
-import 'package:benevolence_calculator/src/core/service/api.dart';
-import 'package:benevolence_calculator/src/screens/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../../../locator.dart';
+import '../../core/bloc/customers_bloc.dart';
+import '../../core/models/customer_model.dart';
+import '../../core/models/payment_model.dart';
+import '../../core/service/api.dart';
 import '../../util/date_time.dart';
+import '../components/loading.dart';
+import '../components/toast_message.dart';
 
 class AddPaymentRecord extends StatefulWidget {
   @override
@@ -168,7 +169,7 @@ class _AddPaymentRecordState extends State<AddPaymentRecord> {
                 if (_currentCustomer != null) {
                   if (_amountController.text != null &&
                       _amountController.text.isNotEmpty) {
-                        print(_amountController.text.isNotEmpty);
+                    print(_amountController.text.isNotEmpty);
                     _api.saveCustomerPayment(PaymentModel(
                         customerId: _currentCustomer.id,
                         amount: _amountController.text,
@@ -176,10 +177,12 @@ class _AddPaymentRecordState extends State<AddPaymentRecord> {
                     _formKey.currentState?.reset();
                     _onSaving(context);
                   } else {
-                    _showSnackBar('Kindly enter amount saving.');
+                    toastMessage(_scaffoldKey.currentContext,
+                        'Kindly enter amount saving.');
                   }
                 } else {
-                  _showSnackBar('Kindly select customer before saving.');
+                  toastMessage(_scaffoldKey.currentContext,
+                      'Kindly select customer before saving.');
                 }
               },
             ),
@@ -217,11 +220,8 @@ class _AddPaymentRecordState extends State<AddPaymentRecord> {
     );
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pop(context); //pop dialog
-      _showSnackBar('Customer payment saved successfully');
+      toastMessage(
+          _scaffoldKey.currentContext, 'Customer payment saved successfully');
     });
-  }
-
-  void _showSnackBar(String value) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 }
