@@ -1,14 +1,15 @@
 import 'dart:io';
 
-import 'package:benevolence_calculator/src/core/bloc/customer_record_bloc.dart';
-import 'package:benevolence_calculator/src/core/models/delivery_model.dart';
-import 'package:benevolence_calculator/src/core/models/payment_model.dart';
-import 'package:benevolence_calculator/src/core/service/api.dart';
-import 'package:benevolence_calculator/src/screens/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../locator.dart';
+import '../../core/bloc/customer_record_bloc.dart';
+import '../../core/models/delivery_model.dart';
+import '../../core/models/payment_model.dart';
+import '../../core/service/api.dart';
+import '../components/loading.dart';
+import '../components/toast_message.dart';
 
 class CustomerRecord extends StatefulWidget {
   final int customerId;
@@ -69,6 +70,16 @@ class _CustomersState extends State<CustomerRecord> {
                     Text("${state.customerRecord["customer"].name}"),
                   ],
                 ),
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.white),
+                    onPressed: () {
+                      _api.removeCustomer(state.customerRecord["customer"].id);
+                      toastMessage(context, "Successfully deleted customer.");
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
                 bottom: TabBar(
                   tabs: [
                     Tab(
@@ -88,11 +99,12 @@ class _CustomersState extends State<CustomerRecord> {
               ),
               body: TabBarView(children: [
                 SingleChildScrollView(
-                  child:
-                      _renderDeliveriesView(context, state.customerRecord["deliveries"]),
+                  child: _renderDeliveriesView(
+                      context, state.customerRecord["deliveries"]),
                 ),
                 SingleChildScrollView(
-                  child: _renderPaymentsView(context, state.customerRecord["payments"]),
+                  child: _renderPaymentsView(
+                      context, state.customerRecord["payments"]),
                 ),
               ]),
             );
@@ -108,8 +120,9 @@ class _CustomersState extends State<CustomerRecord> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
-          children:
-              payments.map((payment) => _buildPaymentCard(context, payment)).toList()),
+          children: payments
+              .map((payment) => _buildPaymentCard(context, payment))
+              .toList()),
     );
   }
 
@@ -147,7 +160,8 @@ class _CustomersState extends State<CustomerRecord> {
               icon: Icon(Icons.delete, color: Colors.red),
               onPressed: () {
                 _api.removePayment(paymentModel.id);
-                _showSnackBar("Payment record deleted successfully");
+                toastMessage(
+                    context, "Payment record deleted successfully", Colors.red);
                 BlocProvider.of<CustomerRecordBloc>(context)
                     .add(GetCustomerRecord(customerId: widget.customerId));
               },
@@ -193,7 +207,8 @@ class _CustomersState extends State<CustomerRecord> {
               icon: Icon(Icons.delete, color: Colors.red),
               onPressed: () {
                 _api.removeDelivery(deliveryModel.id);
-                _showSnackBar("Delivery record deleted successfully");
+                toastMessage(context, "Delivery record deleted successfully",
+                    Colors.red);
                 BlocProvider.of<CustomerRecordBloc>(context)
                     .add(GetCustomerRecord(customerId: widget.customerId));
               },
@@ -251,6 +266,16 @@ class _CustomersState extends State<CustomerRecord> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text('Thirty-Five Bread (GH¢3.50 each)'),
+              Text(
+                '${deliveryModel.biggerBreadQty}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Text('Biggest (GH¢4.00 each)'),
               Text(
                 '${deliveryModel.biggestBreadQty}',
@@ -258,6 +283,17 @@ class _CustomersState extends State<CustomerRecord> {
               )
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Biggest (GH¢4.50 each)'),
+              Text(
+                '${deliveryModel.mostBiggestBreadQty}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+          
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -271,9 +307,5 @@ class _CustomersState extends State<CustomerRecord> {
         ],
       ),
     );
-  }
-
-  void _showSnackBar(String value) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 }
